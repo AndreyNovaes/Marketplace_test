@@ -5,8 +5,11 @@
  * Inclui filtros de preço, marca, categoria, avaliação e mais
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+
+// Configuração para evitar pre-rendering
+export const dynamic = 'force-dynamic'
 import { Filter, X, SlidersHorizontal } from 'lucide-react'
 import { ProductCard } from '@/components/product/ProductCard'
 import { Button } from '@/components/ui/Button'

@@ -180,7 +180,7 @@ export default function HomePage() {
                   key={product.id}
                   product={product}
                   onAddToCart={handleAddToCart}
-                  isAddingToCartId={addingToCartId === product.id}
+                  isAddingToCart={addingToCartId === product.id}
                 />
               ))}
             </div>

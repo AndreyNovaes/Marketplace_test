@@ -7,6 +7,7 @@
 
 import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Star, ShoppingCart, Heart, Share2, Package, Shield, TruckIcon } from 'lucide-react'
 import { getProductById } from '@/lib/mock-data'
 import { ImageGallery } from '@/components/product/SmartImage'
@@ -85,9 +86,9 @@ export default function ProductDetailPage() {
       <div className="bg-gray-50 border-b border-gray-200">
         <div className="container py-3">
           <nav className="flex items-center gap-2 text-sm" data-testid="breadcrumb">
-            <a href="/" className="text-gray-600 hover:text-primary-600">Home</a>
+            <Link href="/" className="text-gray-600 hover:text-primary-600">Home</Link>
             <span className="text-gray-400">/</span>
-            <a href={`/search?category=${product.category}`} className="text-gray-600 hover:text-primary-600">{product.category}</a>
+            <Link href={`/search?category=${product.category}`} className="text-gray-600 hover:text-primary-600">{product.category}</Link>
             <span className="text-gray-400">/</span>
             <span className="text-gray-900 font-medium line-clamp-1">{product.name}</span>
           </nav>
