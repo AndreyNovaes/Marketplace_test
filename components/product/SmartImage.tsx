@@ -98,21 +98,12 @@ export function SmartImage({
       console.error('Erro ao buscar imagem da API:', error)
     }
 
-    // PASSO 3: Fallback - Geração com Gemini (Simulado)
-    setLoadingState('generating-ai')
-    setStatusMessage('Gerando imagem com IA...')
-
-    // Simula tempo de geração de IA de 2000ms
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
+    // PASSO 3: Fallback - Placeholder
     // Gera URL de placeholder com as dimensões especificadas
     const placeholderUrl = `https://placehold.co/${width}x${height}/e2e8f0/64748b?text=${encodeURIComponent(query.substring(0, 30))}`
     setImageUrl(placeholderUrl)
     setLoadingState('success')
-    setStatusMessage('Imagem gerada por IA')
-
-    // Simula salvamento no /public
-    simulateSaveToPublic(placeholderUrl, filename)
+    setStatusMessage('Exibindo placeholder')
   }
 
   /**
@@ -159,9 +150,6 @@ export function SmartImage({
           {loadingState === 'fetching-api' && (
             <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-2" data-testid="loading-icon-api" />
           )}
-          {loadingState === 'generating-ai' && (
-            <Sparkles className="w-12 h-12 text-purple-500 animate-pulse mb-2" data-testid="loading-icon-ai" />
-          )}
 
           {/* Mensagem de status */}
           <p
@@ -177,8 +165,7 @@ export function SmartImage({
               className={`h-1.5 rounded-full transition-all duration-500 ${
                 loadingState === 'checking-local' ? 'w-1/3 bg-gray-400' :
                 loadingState === 'fetching-api' ? 'w-2/3 bg-blue-500' :
-                loadingState === 'generating-ai' ? 'w-full bg-purple-500' :
-                'w-0'
+                'w-full bg-green-500'
               }`}
               data-testid="loading-progress-bar"
             />
@@ -222,14 +209,14 @@ export function SmartImage({
   // Renderiza a imagem com sucesso
   return (
     <div
-      className={`relative overflow-hidden bg-gray-100 ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden bg-gray-100 ${className}`}
       style={{ width, height }}
       data-testid={productId ? `smart-image-${productId}` : 'smart-image'}
     >
       <img
         src={imageUrl}
         alt={alt}
-        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        className="w-full h-full object-contain"
         loading={priority ? 'eager' : 'lazy'}
         data-testid={productId ? `product-image-${productId}` : 'product-image'}
         onError={() => {
