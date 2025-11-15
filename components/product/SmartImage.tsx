@@ -4,16 +4,19 @@
  * SmartImage Component - Componente CRÍTICO para lógica de imagem
  *
  * Este componente implementa um sistema inteligente de fallback de imagens com 3 níveis:
- * 1. Verificação local: Tenta carregar a imagem do diretório /public
+ * 1. Verificação local: Tenta carregar a imagem do diretório /public (gerada pelo script Python)
  * 2. Fallback API/Proxy Google: Busca a imagem via rota de API /api/image-proxy
- * 3. Fallback Gemini (Simulado): Simula geração de imagem com IA usando placeholder
+ * 3. Fallback Placeholder: Exibe placeholder quando nada é encontrado
+ *
+ * NOTA: As imagens devem ser geradas previamente usando o script:
+ * python scripts/generate-images.py
  *
  * Durante o processo, exibe um esqueleto de carregamento e mensagens de status
  * para facilitar a automação de testes
  */
 
 import { useState, useEffect } from 'react'
-import { Loader2, AlertCircle, Sparkles } from 'lucide-react'
+import { Loader2, AlertCircle } from 'lucide-react'
 
 interface SmartImageProps {
   query: string // Query de busca (ex: "Drone profissional com câmera 4K")
@@ -26,7 +29,7 @@ interface SmartImageProps {
   productId?: string // ID do produto (para data-testid)
 }
 
-type LoadingState = 'idle' | 'checking-local' | 'fetching-api' | 'generating-ai' | 'success' | 'error'
+type LoadingState = 'idle' | 'checking-local' | 'fetching-api' | 'success' | 'error'
 
 export function SmartImage({
   query,
