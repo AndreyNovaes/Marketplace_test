@@ -36,3 +36,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 scripts/products-extracted.json
+scripts/image-prompts-ready.txt
