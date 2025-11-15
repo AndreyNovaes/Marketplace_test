@@ -6,6 +6,7 @@ e salvá-las na pasta public/
 
 import os
 import json
+import time
 from pathlib import Path
 from google import genai
 from dotenv import load_dotenv
@@ -438,13 +439,14 @@ PRODUCTS = [
 ]
 
 
-def generate_image(prompt: str, filename: str) -> bool:
+def generate_image(prompt: str, filename: str, max_retries: int = 3) -> bool:
     """
     Gera uma imagem usando Gemini Imagen e salva no disco
 
     Args:
         prompt: Descrição da imagem a ser gerada
         filename: Nome do arquivo para salvar (ex: prod-001-0.jpg)
+        max_retries: Número máximo de tentativas em caso de erro
 
     Returns:
         True se gerou com sucesso, False caso contrário
@@ -456,38 +458,57 @@ def generate_image(prompt: str, filename: str) -> bool:
         print(f"⏭️  Pulando {filename} - já existe")
         return True
 
-    try:
-        print(f"🎨 Gerando: {prompt[:50]}...")
+    for attempt in range(max_retries):
+        try:
+            if attempt > 0:
+                wait_time = 2 ** attempt  # Exponential backoff: 2s, 4s, 8s
+                print(f"⏳ Aguardando {wait_time}s antes de tentar novamente...")
+                time.sleep(wait_time)
 
-        # Gera a imagem
-        result = client.models.generate_images(
-            model=MODEL_ID,
-            prompt=prompt,
-            config=dict(
-                number_of_images=1,
-                output_mime_type="image/jpeg",
-                person_generation="ALLOW_ADULT",
-                aspect_ratio="1:1",
-                image_size="1k"
+            print(f"🎨 Gerando: {prompt[:50]}..." + (f" (tentativa {attempt + 1}/{max_retries})" if attempt > 0 else ""))
+
+            # Gera a imagem
+            result = client.models.generate_images(
+                model=MODEL_ID,
+                prompt=prompt,
+                config=dict(
+                    number_of_images=1,
+                    output_mime_type="image/jpeg",
+                    person_generation="ALLOW_ADULT",
+                    aspect_ratio="1:1"
+                )
             )
-        )
 
-        # Salva a imagem
-        if result.generated_images:
-            image_bytes = result.generated_images[0].image.image_bytes
+            # Salva a imagem
+            if result.generated_images:
+                image_bytes = result.generated_images[0].image.image_bytes
 
-            with open(output_path, 'wb') as f:
-                f.write(image_bytes)
+                with open(output_path, 'wb') as f:
+                    f.write(image_bytes)
 
-            print(f"✅ Salvo: {filename}")
-            return True
-        else:
-            print(f"❌ Erro: Nenhuma imagem gerada para {filename}")
-            return False
+                print(f"✅ Salvo: {filename}")
+                return True
+            else:
+                print(f"❌ Erro: Nenhuma imagem gerada para {filename}")
+                return False
 
-    except Exception as e:
-        print(f"❌ Erro ao gerar {filename}: {str(e)}")
-        return False
+        except Exception as e:
+            error_msg = str(e)
+
+            # Verifica se é erro de rate limit
+            if "RESOURCE_EXHAUSTED" in error_msg or "429" in error_msg or "rate limit" in error_msg.lower():
+                if attempt < max_retries - 1:
+                    print(f"⚠️  Rate limit atingido. Tentando novamente...")
+                    continue
+                else:
+                    print(f"❌ Rate limit após {max_retries} tentativas: {filename}")
+                    return False
+            else:
+                # Outro tipo de erro
+                print(f"❌ Erro ao gerar {filename}: {error_msg}")
+                return False
+
+    return False
 
 
 def main():
@@ -532,6 +553,10 @@ def main():
                         skipped_images += 1
                 else:
                     failed_images += 1
+
+                # Delay entre requisições para evitar rate limit
+                if total_images < len(PRODUCTS) * 2:  # Não aguarda na última imagem
+                    time.sleep(1)
 
     # Resumo
     print()
