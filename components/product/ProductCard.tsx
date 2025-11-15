@@ -45,7 +45,7 @@ export function ProductCard({ product, onAddToCart, isAddingToCart = false }: Pr
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <SmartImage
             query={defaultVariant?.images[0] || product.name}
-            filename={`${product.id}-main.jpg`}
+            filename={`${product.id}-${defaultVariant?.id}-0.jpg`}
             alt={product.name}
             className="w-full h-full"
             width={400}

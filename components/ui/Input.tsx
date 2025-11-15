@@ -5,7 +5,7 @@
  * Inclui suporte para labels, mensagens de erro, ícones e data-testid
  */
 
-import { InputHTMLAttributes, forwardRef, ReactNode } from 'react'
+import { InputHTMLAttributes, forwardRef, ReactNode, useId } from 'react'
 import { AlertCircle } from 'lucide-react'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -35,7 +35,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`
+    const generatedId = useId()
+    const inputId = id || generatedId
     const hasError = !!error
 
     // Classes base do container
