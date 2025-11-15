@@ -5,7 +5,7 @@
  * Inclui suporte para labels, mensagens de erro e data-testid
  */
 
-import { SelectHTMLAttributes, forwardRef } from 'react'
+import { SelectHTMLAttributes, forwardRef, useId } from 'react'
 import { AlertCircle, ChevronDown } from 'lucide-react'
 
 export interface SelectOption {
@@ -41,7 +41,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     },
     ref
   ) => {
-    const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`
+    const generatedId = useId()
+    const selectId = id || generatedId
     const hasError = !!error
 
     // Classes base do container

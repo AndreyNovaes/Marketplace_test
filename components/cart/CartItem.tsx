@@ -47,7 +47,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, isUpdating = false 
       <Link href={`/product/${product.id}`} className="flex-shrink-0">
         <SmartImage
           query={variant.images[0] || product.name}
-          filename={`${product.id}-${variant.id}.jpg`}
+          filename={`${product.id}-${variant.id}-0.jpg`}
           alt={`${product.name} - ${variant.color}`}
           className="rounded-lg overflow-hidden"
           width={120}

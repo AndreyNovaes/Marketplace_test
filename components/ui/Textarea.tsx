@@ -5,7 +5,7 @@
  * Inclui suporte para labels, contador de caracteres, mensagens de erro e data-testid
  */
 
-import { TextareaHTMLAttributes, forwardRef, useState, ChangeEvent } from 'react'
+import { TextareaHTMLAttributes, forwardRef, useState, ChangeEvent, useId } from 'react'
 import { AlertCircle } from 'lucide-react'
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -40,7 +40,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       typeof value === 'string' ? value.length : 0
     )
 
-    const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`
+    const generatedId = useId()
+    const textareaId = id || generatedId
     const hasError = !!error
 
     // Classes base do container
